@@ -8,6 +8,9 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
     username = db.Column(db.String(100), nullable=True)
     password = db.Column(db.String(100), nullable=True)
+    send_mail_time = db.Column(db.DateTime)
+    is_active = db.Column(db.Boolean, default=False)
+    activation_token = db.Column(db.String(64))
 
 
 class Manga(db.Model):
