@@ -40,5 +40,5 @@ class UserManga(db.Model):
     in_track_list = db.Column(db.Boolean, default=False)
     send_mail = db.Column(db.Boolean, default=False)
 
-    user = db.relationship('User', backref='manga', lazy='dynamic')
-    manga = db.relationship('Manga', backref='users', lazy='dynamic')
+    user = db.relationship('User', backref='manga')
+    manga = db.relationship('Manga', backref='users')

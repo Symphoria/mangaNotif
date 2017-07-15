@@ -1,5 +1,8 @@
 import subprocess
 import json
+import os
+import sendgrid
+from email_templates import *
 
 
 def scrape_manga_data():
@@ -13,3 +16,30 @@ def scrape_manga_data():
             print manga_data
             # data_file.seek(0)
             # data_file.truncate()
+
+
+def send_mail(receiver, activation_token):
+    sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
+
+    data = {
+        "personalizations": [
+            {
+                "to": [
+                    {
+                        "email": receiver
+                    }
+                ],
+                "subject": "Confirm Account"
+            }
+        ],
+        "from": {
+            "email": "hj.harshit007@gmail.com"
+        },
+        "content": [
+            {
+                "type": "text/html",
+                "value": confirm_account_template(activation_token)
+            }
+        ]
+    }
+    response = sg.client.mail.send.post(request_body=data)
