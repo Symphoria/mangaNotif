@@ -10,7 +10,7 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=True)
     send_mail_time = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=False)
-    activation_token = db.Column(db.String(64))
+    activation_token = db.Column(db.String(64), nullable=True)
 
 
 class Manga(db.Model):
