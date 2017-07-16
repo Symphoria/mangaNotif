@@ -655,7 +655,7 @@ def confirm_account_template(activation_token):
                     <tbody>
                         <tr>
                             <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Arial; font-size: 16px; padding: 15px;">
-                                <a class="mcnButton " title="Confirm" href="http://127.0.0.1:8000/confirm/?q="''' + activation_token + '''target="_blank" style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Confirm</a>
+                                <a class="mcnButton " title="Confirm" href="http://127.0.0.1:8000/confirm?q="''' + activation_token + '''target="_blank" style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Confirm</a>
                             </td>
                         </tr>
                     </tbody>

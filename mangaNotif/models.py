@@ -15,6 +15,9 @@ class User(db.Model):
     created_on = db.Column(db.DateTime, default=datetime.now())
     last_logged_in = db.Column(db.DateTime, nullable=True)
 
+    def __repr__(self):
+        return self.email
+
 
 class Manga(db.Model):
     __tablename__ = 'manga'
@@ -30,6 +33,9 @@ class Manga(db.Model):
     info = db.Column(db.Text)
     cover_art_url = db.Column(db.String(240))
     latest_chapter = db.Column(db.Integer)
+
+    def __repr__(self):
+        return self.title
 
 
 class UserManga(db.Model):

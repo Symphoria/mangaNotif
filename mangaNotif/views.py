@@ -1,5 +1,6 @@
 from mangaNotif import db, app, bcrypt
 from flask import request, jsonify, make_response, url_for
+from flask.views import MethodView
 import os
 import jwt
 from datetime import datetime, timedelta
@@ -7,6 +8,26 @@ from models import *
 import string
 from random import choice
 from helper_functions import send_mail
+from serializers import *
+
+
+def is_authenticated(req):
+    auth_token = req.headers.get('Authentication-Token')
+
+    if auth_token:
+        try:
+            auth_token_payload = jwt.decode(auth_token, os.environ["JWT_SECRET"])
+            user_id = int(auth_token_payload['user_id'])
+            user = User.query.filter_by(id=user_id, is_active=True).first()
+
+            if user:
+                return user
+            else:
+                return False
+        except jwt.ExpiredSignatureError:
+            return False
+    else:
+        return False
 
 
 @app.route('/register', methods=['POST'])
@@ -76,15 +97,9 @@ def confirm():
 
 @app.route('/login', methods=['POST'])
 def login():
-    auth_token = request.headers.get('Authorization-Token')
-    if auth_token:
-        try:
-            auth_token_payload = jwt.decode(auth_token, os.environ["JWT_SECRET"])
-            response = jsonify({'message': 'User is already logged in'})
-
-            return make_response(response), 200
-        except jwt.ExpiredSignatureError:
-            pass
+    user = is_authenticated(request)
+    if user:
+        return make_response(jsonify({'message': 'User is already logged in'})), 200
 
     data = request.get_json()
     username_or_email = data['usernameOrEmail']
@@ -115,3 +130,15 @@ def login():
         return make_response(jsonify(payload)), 200
     else:
         return make_response(jsonify({"message": "User does not exist"})), 404
+
+
+class UserView(MethodView):
+    def get(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        user_schema = UserSchema()
+        payload = user_schema.jsonify(user)
+
+        return make_response(payload), 200
