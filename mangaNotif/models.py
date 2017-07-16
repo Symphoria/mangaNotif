@@ -1,4 +1,5 @@
 from mangaNotif import db
+from datetime import datetime
 
 
 class User(db.Model):
@@ -11,6 +12,8 @@ class User(db.Model):
     send_mail_time = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=False)
     activation_token = db.Column(db.String(64), nullable=True)
+    created_on = db.Column(db.DateTime, default=datetime.now())
+    last_logged_in = db.Column(db.DateTime, nullable=True)
 
 
 class Manga(db.Model):

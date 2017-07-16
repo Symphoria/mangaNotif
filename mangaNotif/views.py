@@ -23,10 +23,13 @@ def register():
             new_user = User(username=username, email=email, send_mail_time=send_mail_time, is_active=True,
                             activation_token=activation_token)
         else:
-            password_hash = bcrypt.generate_password_hash(data['password'])
-            new_user = User(username=data['username'], password=password_hash, send_mail_time=send_mail_time, email=email,
-                            activation_token=activation_token)
-            send_mail(email, activation_token)
+            if User.query.filter_by(username=data['username']).count() == 0:
+                password_hash = bcrypt.generate_password_hash(data['password'])
+                new_user = User(username=data['username'], password=password_hash, send_mail_time=send_mail_time,
+                                email=email, activation_token=activation_token)
+                send_mail(email, activation_token)
+            else:
+                return make_response(jsonify({"message": "Username already exists"})), 400
 
         db.session.add(new_user)
         db.session.commit()
@@ -73,8 +76,42 @@ def confirm():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if 'Authorization_Token' in request.headers:
-        auth_token_payload = jwt.decode(request.headers['Authorization_Token'], os.environ["JWT_SECRET"])
-        if auth_token_payload['exp'] > datetime.now():
+    auth_token = request.headers.get('Authorization-Token')
+    if auth_token:
+        try:
+            auth_token_payload = jwt.decode(auth_token, os.environ["JWT_SECRET"])
             response = jsonify({'message': 'User is already logged in'})
-            return make_response(response), 204
+
+            return make_response(response), 200
+        except jwt.ExpiredSignatureError:
+            pass
+
+    data = request.get_json()
+    username_or_email = data['usernameOrEmail']
+    user = None
+
+    if data['viaOauth'] is True:
+        user = User.query.filter(User.email == username_or_email, User.is_active == True).first()
+    else:
+        check_user = User.query.filter((User.email == username_or_email) | (User.username == username_or_email),
+                                       User.is_active == True).first()
+
+        if check_user and bcrypt.check_password_hash(check_user.password, data['password']):
+            user = check_user
+
+    if user is not None:
+        user_id = user.id
+        jwt_payload = {
+            "user_id": user_id,
+            "exp": datetime.utcnow() + timedelta(days=7)
+        }
+        auth_token = jwt.encode(jwt_payload, os.environ.get('JWT_SECRET'), algorithm='HS256')
+        user.last_logged_in = datetime.now()
+        db.session.commit()
+        payload = {
+            "authToken": auth_token
+        }
+
+        return make_response(jsonify(payload)), 200
+    else:
+        return make_response(jsonify({"message": "User does not exist"})), 404
