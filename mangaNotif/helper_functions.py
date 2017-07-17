@@ -2,7 +2,6 @@ import subprocess
 import json
 import os
 import sendgrid
-from email_templates import *
 
 
 def scrape_manga_data():
@@ -18,7 +17,7 @@ def scrape_manga_data():
             # data_file.truncate()
 
 
-def send_mail(receiver, activation_token):
+def send_mail(receiver, email_template):
     sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 
     data = {
@@ -38,7 +37,7 @@ def send_mail(receiver, activation_token):
         "content": [
             {
                 "type": "text/html",
-                "value": confirm_account_template(activation_token)
+                "value": email_template
             }
         ]
     }

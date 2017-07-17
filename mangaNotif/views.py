@@ -9,6 +9,7 @@ import string
 from random import choice
 from helper_functions import send_mail
 from serializers import *
+from email_templates import *
 
 
 def is_authenticated(req):
@@ -48,7 +49,8 @@ def register():
                 password_hash = bcrypt.generate_password_hash(data['password'])
                 new_user = User(username=data['username'], password=password_hash, send_mail_time=send_mail_time,
                                 email=email, activation_token=activation_token)
-                send_mail(email, activation_token)
+                email_template = confirm_account_template(activation_token)
+                send_mail(email, email_template)
             else:
                 return make_response(jsonify({"message": "Username already exists"})), 400
 
@@ -142,3 +144,25 @@ class UserView(MethodView):
         payload = user_schema.jsonify(user)
 
         return make_response(payload), 200
+
+    def put(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        data = request.get_json()
+        user.username = data['username']
+        user.email = data['email']
+        user.send_mail_time = datetime.strptime(data['sendMailTime'], '%I:%M%p')
+
+        if data['changePassword'] is True:
+            if bcrypt.check_password_hash(user.password, data['oldPassword']):
+                new_password_hash = bcrypt.generate_password_hash(data['newPassword'])
+                user.password = new_password_hash
+            else:
+                return make_response(jsonify({"message": "Entered password is incorrect"})), 403
+
+        db.session.commit()
+        response = jsonify({"message": "User details updated"})
+
+        return make_response(response), 200
