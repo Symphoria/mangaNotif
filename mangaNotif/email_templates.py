@@ -1,5 +1,5 @@
 def confirm_account_template(activation_token):
-	return '''<!doctype html>
+    return '''<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 	<head>
 		<!-- NAME: 1 COLUMN -->
@@ -681,3 +681,7 @@ def confirm_account_template(activation_token):
 		</center>
 	</body>
 </html>'''
+
+
+def forget_password_template(activation_token):
+    return 1

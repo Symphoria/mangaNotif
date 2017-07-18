@@ -1,5 +1,5 @@
 from mangaNotif import db, app, bcrypt
-from flask import request, jsonify, make_response, url_for
+from flask import request, jsonify, make_response
 from flask.views import MethodView
 import os
 import jwt
@@ -134,6 +134,30 @@ def login():
         return make_response(jsonify({"message": "User does not exist"})), 404
 
 
+@app.route('/forget-password', methods=['PUT'])
+def forget_password():
+    activation_token = request.headers.get('Activation-Token')
+    data = request.get_json()
+
+    if activation_token:
+        user = User.query.filter_by(activation_token=activation_token, is_active=True).first()
+
+        if user:
+            new_password_hash = bcrypt.generate_password_hash(data['newPassword'])
+            user.password = new_password_hash
+            db.session.commit()
+        else:
+            return make_response(jsonify({"message": "There was some error"})), 400
+    elif data.get('email'):
+        user = User.query.filter_by(email=data['email'], is_active=True).first()
+
+        if user:
+            email_template = forget_password_template(user.activation_token)
+            send_mail(data['email'], email_template)
+    else:
+        return make_response(jsonify({"message": "There was something wrong"})), 400
+
+
 class UserView(MethodView):
     def get(self):
         user = is_authenticated(request)
@@ -164,5 +188,16 @@ class UserView(MethodView):
 
         db.session.commit()
         response = jsonify({"message": "User details updated"})
+
+        return make_response(response), 200
+
+    def delete(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        db.session.delete(user)
+        db.session.commit()
+        response = jsonify({"message": "User deleted"})
 
         return make_response(response), 200
