@@ -277,3 +277,27 @@ class TrackListView(MethodView):
             return make_response(response), 200
         else:
             return make_response(jsonify({"message": "Manga not found"})), 404
+
+    def delete(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        data = request.get_json()
+        manga = Manga.query.filter_by(manga_id=data['mangaId']).first()
+
+        if manga:
+            user_manga_obj = UserManga.query.filter_by(user_id=user.id, manga_id=manga.id, in_track_list=True).first()
+
+            if user_manga_obj:
+                if user_manga_obj.bookmarked is True:
+                    user_manga_obj.in_track_list = False
+                else:
+                    db.session.delete(user_manga_obj)
+
+                db.session.commit()
+                response = jsonify({"message": "Manga removed from track list"})
+
+                return make_response(response), 200
+
+        return make_response(jsonify({"message": "Manga not found"})), 404
