@@ -214,9 +214,9 @@ class MangaView(MethodView):
 
         if manga_id:
             manga = Manga.query.filter_by(manga_id=manga_id).first()
+            manga_shema = MangaSchema()
 
             if manga:
-                manga_shema = MangaSchema()
                 payload = manga_shema.jsonify(manga)
             else:
                 manga_info = requests.get(
@@ -242,6 +242,28 @@ class MangaView(MethodView):
                                   last_updated=datetime.strptime(payload['lastUpdate'][:-2], '%Y-%m-%dT%H:%M:%S.%f'))
                 db.session.add(new_manga)
                 db.session.commit()
-                payload = jsonify(payload)
+                payload = manga_shema.jsonify(new_manga)
 
             return make_response(payload), 200
+        else:
+            return make_response(jsonify({"message": "Manga is not specified"})), 400
+
+
+class TrackListView(MethodView):
+    def post(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        data = request.get_json()
+        manga = Manga.query.filter_by(manga_id=data['mangaId']).first()
+
+        if manga:
+            user_manga_obj = UserManga(user_id=user.id, manga_id=manga.id, in_track_list=True)
+            db.session.add(user_manga_obj)
+            db.session.commit()
+            response = jsonify({"message": "Manga added to track list"})
+
+            return make_response(response), 200
+        else:
+            return make_response(jsonify({"message": "Manga not found"})), 404
