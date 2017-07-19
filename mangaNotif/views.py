@@ -1,5 +1,5 @@
 from mangaNotif import db, app, bcrypt
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, json
 from flask.views import MethodView
 import os
 import jwt
@@ -10,6 +10,7 @@ from random import choice
 from helper_functions import send_mail
 from serializers import *
 from email_templates import *
+import requests
 
 
 def is_authenticated(req):
@@ -201,3 +202,46 @@ class UserView(MethodView):
         response = jsonify({"message": "User deleted"})
 
         return make_response(response), 200
+
+
+class MangaView(MethodView):
+    def get(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        manga_id = request.args.get('mangaId')
+
+        if manga_id:
+            manga = Manga.query.filter_by(manga_id=manga_id).first()
+
+            if manga:
+                manga_shema = MangaSchema()
+                payload = manga_shema.jsonify(manga)
+            else:
+                manga_info = requests.get(
+                    "https://doodle-manga-scraper.p.mashape.com/mangafox.me/manga/" + manga_id + "/",
+                    headers={
+                        "X-Mashape-Key": "0scVXX9O09msh51PWISWbEzSK0nDp1PU7hkjsn8T3ddvspu36f",
+                        "Accept": "text/plain"
+                    })
+                payload = json.loads(manga_info.content)
+                payload['latestChapter'] = payload['chapters'][-1]['chapterId']
+                del payload['chapters']
+                new_manga = Manga(manga_id=manga_id,
+                                  title=payload['name'],
+                                  manga_url=payload['href'],
+                                  author=json.dumps(payload['author']),
+                                  artist=json.dumps(payload['artist']),
+                                  status=payload['status'],
+                                  year_of_release=payload['yearOfRelease'],
+                                  genres=json.dumps(payload['genres']),
+                                  info=payload['info'],
+                                  cover_art_url=payload['cover'],
+                                  latest_chapter=payload['latestChapter'],
+                                  last_updated=datetime.strptime(payload['lastUpdate'][:-2], '%Y-%m-%dT%H:%M:%S.%f'))
+                db.session.add(new_manga)
+                db.session.commit()
+                payload = jsonify(payload)
+
+            return make_response(payload), 200

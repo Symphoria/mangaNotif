@@ -23,6 +23,7 @@ class Manga(db.Model):
     __tablename__ = 'manga'
 
     id = db.Column(db.Integer, primary_key=True)
+    manga_id = db.Column(db.String(240), unique=True)
     title = db.Column(db.String(240), unique=True)
     manga_url = db.Column(db.String(360))
     author = db.Column(db.String(240))
@@ -32,7 +33,8 @@ class Manga(db.Model):
     genres = db.Column(db.String(240))
     info = db.Column(db.Text)
     cover_art_url = db.Column(db.String(240))
-    latest_chapter = db.Column(db.Integer)
+    latest_chapter = db.Column(db.String(10))
+    last_updated = db.Column(db.DateTime)
 
     def __repr__(self):
         return self.title
