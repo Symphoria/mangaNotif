@@ -217,7 +217,7 @@ class MangaView(MethodView):
             manga_shema = MangaSchema()
 
             if manga:
-                payload = manga_shema.jsonify(manga)
+                result = manga_shema.dump(manga)
             else:
                 manga_info = requests.get(
                     "https://doodle-manga-scraper.p.mashape.com/mangafox.me/manga/" + manga_id + "/",
@@ -242,7 +242,17 @@ class MangaView(MethodView):
                                   last_updated=datetime.strptime(payload['lastUpdate'][:-2], '%Y-%m-%dT%H:%M:%S.%f'))
                 db.session.add(new_manga)
                 db.session.commit()
-                payload = manga_shema.jsonify(new_manga)
+                manga = new_manga
+                result = manga_shema.dump(new_manga)
+
+            track_listed_manga = UserManga.query.filter_by(user_id=user.id, manga_id=manga.id,
+                                                           in_track_list=True).first()
+            if track_listed_manga:
+                result.data['inTrackList'] = True
+            else:
+                result.data['inTrackList'] = False
+
+            payload = jsonify(result.data)
 
             return make_response(payload), 200
         else:
