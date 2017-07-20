@@ -29,11 +29,11 @@ class Manga(db.Model):
     author = db.Column(db.String(240))
     artist = db.Column(db.String(240))
     status = db.Column(db.String(50))
-    year_of_release = db.Column(db.String(10))
+    year_of_release = db.Column(db.Integer)
     genres = db.Column(db.String(240))
     info = db.Column(db.Text)
     cover_art_url = db.Column(db.String(240))
-    latest_chapter = db.Column(db.String(10))
+    latest_chapter = db.Column(db.Float)
     last_updated = db.Column(db.DateTime)
 
     def __repr__(self):

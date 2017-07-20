@@ -1,6 +1,7 @@
 from mangaNotif import db, app, bcrypt
 from flask import request, jsonify, make_response, json
 from flask.views import MethodView
+from sqlalchemy.orm import Session, session
 import os
 import jwt
 from datetime import datetime, timedelta
@@ -277,6 +278,27 @@ class TrackListView(MethodView):
             return make_response(response), 200
         else:
             return make_response(jsonify({"message": "Manga not found"})), 404
+
+    def get(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        manga_id_list = db.session.query(UserManga.manga_id).filter_by(user_id=user.id, in_track_list=True)
+
+        if manga_id_list.count() > 0:
+            track_listed_manga = Manga.query.filter(Manga.id.in_(manga_id_list)).all()
+            manga_schema = MangaSchema(many=True)
+            result = manga_schema.dump(track_listed_manga)
+
+            for manga in result.data:
+                manga['inTrackList'] = True
+
+            payload = jsonify(result.data)
+
+            return make_response(payload), 200
+        else:
+            return make_response(jsonify({"message": "There are no manga in your track list"})), 200
 
     def delete(self):
         user = is_authenticated(request)
