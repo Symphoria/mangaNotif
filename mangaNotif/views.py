@@ -270,10 +270,19 @@ class TrackListView(MethodView):
         manga = Manga.query.filter_by(manga_id=data['mangaId']).first()
 
         if manga:
-            user_manga_obj = UserManga(user_id=user.id, manga_id=manga.id, in_track_list=True)
-            db.session.add(user_manga_obj)
-            db.session.commit()
-            response = jsonify({"message": "Manga added to track list"})
+            user_manga = UserManga.query.filter_by(user_id=user.id, manga_id=manga.id).scalar()
+
+            if user_manga:
+                if user_manga.in_track_list is False:
+                    user_manga.in_track_list = True
+                    response = jsonify({"message": "Manga added to track list"})
+                else:
+                    response = jsonify({"message": "Manga is already in your track list"})
+            else:
+                user_manga_obj = UserManga(user_id=user.id, manga_id=manga.id, in_track_list=True)
+                db.session.add(user_manga_obj)
+                db.session.commit()
+                response = jsonify({"message": "Manga added to track list"})
 
             return make_response(response), 200
         else:
@@ -323,3 +332,31 @@ class TrackListView(MethodView):
                 return make_response(response), 200
 
         return make_response(jsonify({"message": "Manga not found"})), 404
+
+
+class BookmarkView(MethodView):
+    def post(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        data = request.get_json()
+        manga = Manga.query.filter_by(manga_id=data['mangaId']).scalar()
+
+        if manga:
+            user_manga = UserManga.query.filter_by(user_id=user.id, manga_id=manga.id).scalar()
+
+            if user_manga:
+                user_manga.bookmarked = True
+                user_manga.chapter = data['chapter']
+            else:
+                user_manga_obj = UserManga(user_id=user.id, manga_id=manga.id, bookmarked=True, chapter=data['chapter'])
+                db.session.add(user_manga_obj)
+
+            db.session.commit()
+            response = jsonify({"message": "Bookmark added"})
+
+            return make_response(response), 200
+        else:
+            return make_response(jsonify({"message": "Manga not found"})), 404
+
