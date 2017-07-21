@@ -294,22 +294,21 @@ class TrackListView(MethodView):
             return make_response(jsonify({"message": "User is not authenticated"})), 401
 
         page = request.args.get('page', 1)
-        manga_id_list = db.session.query(UserManga.manga_id).filter_by(user_id=user.id, in_track_list=True)
+        manga_id_list = db.session.query(UserManga.manga_id).filter_by(user_id=user.id, in_track_list=True).paginate(
+            int(page), app.config['MANGA_PER_PAGE'], error_out=False)
 
-        if manga_id_list.count() > 0:
-            track_listed_manga = Manga.query.filter(Manga.id.in_(manga_id_list)).paginate(int(page),
-                                                                                          app.config['MANGA_PER_PAGE'],
-                                                                                          error_out=False)
+        if len(manga_id_list.items) > 0:
+            track_listed_manga = Manga.query.filter(Manga.id.in_(manga_id_list.items))
             manga_schema = MangaSchema(many=True)
-            result = manga_schema.dump(track_listed_manga.items)
+            result = manga_schema.dump(track_listed_manga)
 
             for manga in result.data:
                 manga['inTrackList'] = True
 
             payload = {
-                'totalPages': track_listed_manga.pages,
-                'hasNext': track_listed_manga.has_next,
-                'hasPrevious': track_listed_manga.has_prev,
+                'totalPages': manga_id_list.pages,
+                'hasNext': manga_id_list.has_next,
+                'hasPrevious': manga_id_list.has_prev,
                 'mangaData': result.data
             }
 
@@ -395,3 +394,27 @@ class BookmarkView(MethodView):
             return make_response(jsonify(payload)), 200
         else:
             return make_response(jsonify({"message": "No manga bookmarked yet"})), 404
+
+    def delete(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        data = request.get_json()
+        manga = Manga.query.filter_by(manga_id=data['mangaId']).first()
+
+        if manga:
+            user_manga = UserManga.query.filter_by(user_id=user.id, manga_id=manga.id, bookmarked=True).first()
+
+            if user_manga:
+                if user_manga.in_track_list is True:
+                    user_manga.bookmarked = False
+                else:
+                    db.session.delete(user_manga)
+
+                db.session.commit()
+                response = jsonify({"message": "Manga removes from bookmarks"})
+
+                return make_response(response), 200
+
+        return make_response(jsonify({"message": "Manga not found"})), 404
