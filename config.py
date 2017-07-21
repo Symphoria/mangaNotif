@@ -26,3 +26,5 @@ CSRF_SESSION_KEY = os.environ['CSRF_SESSION_KEY']
 SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = True
+
+MANGA_PER_PAGE = 15
