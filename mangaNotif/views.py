@@ -280,8 +280,9 @@ class TrackListView(MethodView):
             else:
                 user_manga_obj = UserManga(user_id=user.id, manga_id=manga.id, in_track_list=True)
                 db.session.add(user_manga_obj)
-                db.session.commit()
                 response = jsonify({"message": "Manga added to track list"})
+
+            db.session.commit()
 
             return make_response(response), 200
         else:
@@ -366,3 +367,31 @@ class BookmarkView(MethodView):
             return make_response(response), 200
         else:
             return make_response(jsonify({"message": "Manga not found"})), 404
+
+    def get(self):
+        user = is_authenticated(request)
+        if user is False:
+            return make_response(jsonify({"message": "User is not authenticated"})), 401
+
+        page = request.args.get('page', 1)
+        user_manga_list = UserManga.query.filter_by(user_id=user.id, bookmarked=True).paginate(int(page), app.config[
+            'MANGA_PER_PAGE'], error_out=False)
+
+        if len(user_manga_list.items) > 0:
+            manga_schema = MangaSchema()
+            payload = {
+                'totalPages': user_manga_list.pages,
+                'hasNext': user_manga_list.has_next,
+                'hasPrevious': user_manga_list.has_prev,
+                'mangaData': []
+            }
+
+            for user_manga in user_manga_list.items:
+                manga = Manga.query.filter_by(id=user_manga.manga_id).first()
+                result = manga_schema.dump(manga)
+                result.data['chapter'] = user_manga.chapter
+                payload['mangaData'].append(result.data)
+
+            return make_response(jsonify(payload)), 200
+        else:
+            return make_response(jsonify({"message": "No manga bookmarked yet"})), 404
