@@ -28,3 +28,12 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = True
 
 MANGA_PER_PAGE = 15
+
+JOBS = [
+    {
+        'id': 'scrape_manga_data',
+        'func': 'mangaNotif.helper_functions:scrape_manga_data',
+        'trigger': 'interval',
+        'seconds': 20
+    }
+]

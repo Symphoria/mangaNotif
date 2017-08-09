@@ -1,20 +1,34 @@
-import subprocess
 import json
 import os
 import sendgrid
+from mangaNotif import db
+from models import Manga, UserManga
+import datetime
 
 
 def scrape_manga_data():
-    subprocess.call("python manga_scraper.py", shell=True)
-    with open('result.json', 'r+') as data_file:
+    os.system("python mangaNotif/manga_scraper.py")
+    with open('mangaNotif/result.json', 'r+') as data_file:
         first_char = data_file.read(1)
+
         if first_char:
             data_file.seek(0)
-            # data = data_file.read()
-            manga_data = json.load(data_file)
-            print manga_data
-            # data_file.seek(0)
-            # data_file.truncate()
+            manga_data_list = json.load(data_file)
+            data_file.seek(0)
+            data_file.truncate()
+
+            for manga_data in manga_data_list:
+                manga = Manga.query.filter_by(title=manga_data['name']).first()
+
+                if manga:
+                    manga.latest_chapter = manga_data['chapter_name'].split()[-1]
+                    manga.last_updated = datetime.datetime.now()
+
+                    user_manga_list = UserManga.query.filter_by(manga_id=manga.id, in_track_list=True)
+                    for user_manga_obj in user_manga_list:
+                        user_manga_obj.send_mail = True
+
+            db.session.commit()
 
 
 def send_mail(receiver, email_template):

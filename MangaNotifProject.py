@@ -1,3 +1,4 @@
-from mangaNotif import app
+from mangaNotif import app, scheduler
 
-app.run(port=8000, debug=True)
+scheduler.start()
+app.run(port=8000, debug=True, use_reloader=False)
