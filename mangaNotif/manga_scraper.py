@@ -12,7 +12,7 @@ class MangaSpider(scrapy.Spider):
         for manga in response.css('ul#updates li div'):
             update_time = manga.css('h3 em::text').extract_first().split()
             if len(update_time) == 3 and (
-                            update_time[1] == 'minutes' or (update_time[1] == 'hours' and int(update_time[0]) <= 2)):
+                            update_time[1] == 'minutes' or (update_time[1] == 'hours' and int(update_time[0]) <= 1)):
                 yield {
                     'name': manga.css('h3.title a.series_preview::text').extract_first(),
                     'link_manga': manga.css('h3.title a.series_preview::attr(href)').extract_first(),
