@@ -51,7 +51,7 @@ def register():
                 new_user = User(username=data['username'], password=password_hash, send_mail_time=send_mail_time,
                                 email=email, activation_token=activation_token)
                 email_template = confirm_account_template(activation_token)
-                send_mail(email, email_template)
+                #send_mail(email, email_template)
             else:
                 return make_response(jsonify({"message": "Username already exists"})), 400
 
