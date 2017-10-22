@@ -67,8 +67,6 @@ def scrape_manga_data():
         if first_char:
             data_file.seek(0)
             manga_data_list = json.load(data_file)
-            data_file.seek(0)
-            data_file.truncate()
 
             for manga_data in manga_data_list:
                 manga = Manga.query.filter_by(title=manga_data['name']).first()
@@ -82,4 +80,6 @@ def scrape_manga_data():
                         user_manga_obj.send_mail = True
 
             db.session.commit()
+            data_file.seek(0)
+            data_file.truncate()
             send_notif_mail()

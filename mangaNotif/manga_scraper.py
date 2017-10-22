@@ -5,25 +5,25 @@ from scrapy.crawler import CrawlerProcess
 class MangaSpider(scrapy.Spider):
     name = "updates"
     start_urls = [
-        'http://mangafox.me/',
+        'http://www.mangareader.net/',
     ]
 
     def parse(self, response):
-        for manga in response.css('ul#updates li div'):
-            update_time = manga.css('h3 em::text').extract_first().split()
-            if len(update_time) == 3 and (
-                            update_time[1] == 'minutes' or (update_time[1] == 'hours' and int(update_time[0]) <= 1)):
+        base_url = 'http://www.mangareader.net'
+
+        for manga in response.css('div#latestchapters table.updates tr'):
+            if manga.css('td.c5::text').extract_first() == 'Today':
                 yield {
-                    'name': manga.css('h3.title a.series_preview::text').extract_first(),
-                    'link_manga': manga.css('h3.title a.series_preview::attr(href)').extract_first(),
-                    'chapter_name': manga.css('span.chapter a.chapter::text').extract_first(),
-                    'chapter_link': manga.css('span.chapter a.chapter::attr(href)').extract_first(),
+                    'name': manga.css('a.chapter strong::text').extract_first(),
+                    'link_manga': base_url + manga.css('a.chapter::attr(href)').extract_first(),
+                    'chapter_name': manga.css('a.chaptersrec::text').extract_first(),
+                    'chapter_link': base_url + manga.css('a.chaptersrec::attr(href)').extract_first()
                 }
 
 
 if __name__ == "__main__":
     process = CrawlerProcess({
-        'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)',
+        'USER_AGENT': "Mozilla/5.0 (X11; Linux x86_64; rv:7.0.1) Gecko/20100101 Firefox/7.7",
         'FEED_FORMAT': 'json',
         'FEED_URI': 'mangaNotif/result.json'
     })

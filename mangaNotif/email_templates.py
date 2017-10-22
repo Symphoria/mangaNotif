@@ -1,5 +1,5 @@
 def confirm_account_template(activation_token):
-    activation_url = "http://localhost:8080/confirm?q=" + activation_token
+    activation_url = "http://localhost:8080/#/confirm/" + activation_token
 
     template = '''<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
