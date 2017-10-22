@@ -3,7 +3,7 @@ from flask import request, jsonify, make_response, json
 from flask.views import MethodView
 import os
 import jwt
-from datetime import datetime, timedelta
+from datetime import timedelta
 from models import *
 import string
 from random import choice
@@ -30,6 +30,21 @@ def is_authenticated(req):
             return False
     else:
         return False
+
+
+@app.route('/check-token', methods=['PUT'])
+def check_token():
+    data = request.get_json()
+    auth_token = data['token']
+
+    try:
+        auth_token_payload = jwt.decode(auth_token, os.environ["JWT_SECRET"])
+        expiration_time = auth_token_payload['exp']
+        is_valid = datetime.now() + timedelta(minutes=30) <= datetime.fromtimestamp(expiration_time)
+    except jwt.ExpiredSignatureError:
+        is_valid = False
+
+    return make_response(jsonify({'isValid': is_valid})), 200
 
 
 @app.route('/register', methods=['POST'])
