@@ -13,4 +13,4 @@ class MangaSchema(ma.ModelSchema):
         model = Manga
         fields = (
             'title', 'manga_url', 'author', 'artist', 'status', 'year_of_release', 'genres', 'info', 'cover_art_url',
-            'latest_chapter', 'last_updated')
+            'latest_chapter', 'last_updated', 'manga_id')

@@ -245,13 +245,13 @@ class MangaView(MethodView):
                 del payload['chapters']
                 new_manga = Manga(manga_id=manga_id,
                                   title=payload['name'],
-                                  manga_url=payload['href'],
+                                  manga_url="http://www.mangareader.net/" + payload['href'],
                                   author=json.dumps(payload['author']),
                                   artist=json.dumps(payload['artist']),
                                   status=payload['status'],
-                                  year_of_release=payload['yearOfRelease'],
+                                  year_of_release=payload.get('yearOfRelease', 0),
                                   genres=json.dumps(payload['genres']),
-                                  info=payload['info'],
+                                  info=payload.get('info', 'Sorry, currently info about this manga is not available'),
                                   cover_art_url=payload['cover'],
                                   latest_chapter=payload['latestChapter'],
                                   last_updated=datetime.strptime(payload['lastUpdate'][:-2], '%Y-%m-%dT%H:%M:%S.%f'))

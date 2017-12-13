@@ -27,7 +27,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = True
 
-MANGA_PER_PAGE = 15
+MANGA_PER_PAGE = 9
 
 JOBS = [
     {
