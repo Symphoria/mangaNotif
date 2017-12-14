@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 class User(db.Model):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True)
@@ -44,7 +44,7 @@ class UserManga(db.Model):
     __tablename__ = 'user_manga'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     manga_id = db.Column(db.Integer, db.ForeignKey('manga.id'))
     chapter = db.Column(db.Integer)
     bookmarked = db.Column(db.Boolean, default=False)

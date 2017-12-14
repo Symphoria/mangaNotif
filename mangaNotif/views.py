@@ -193,7 +193,7 @@ class UserView(MethodView):
         data = request.get_json()
         user.username = data['username']
         user.email = data['email']
-        user.send_mail_time = datetime.strptime(data['sendMailTime'], '%I:%M%p')
+        # user.send_mail_time = datetime.strptime(data['sendMailTime'], '%I:%M%p')
 
         if data['changePassword'] is True:
             if bcrypt.check_password_hash(user.password, data['oldPassword']):
