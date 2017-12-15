@@ -66,7 +66,7 @@ def register():
                 new_user = User(username=data['username'], password=password_hash, send_mail_time=send_mail_time,
                                 email=email, activation_token=activation_token)
                 email_template = confirm_account_template(activation_token)
-                send_mail(email, email_template)
+                #send_mail(email, email_template)
             else:
                 return make_response(jsonify({"message": "Username already exists"})), 400
 
@@ -222,9 +222,6 @@ class UserView(MethodView):
 class MangaView(MethodView):
     def get(self):
         user = is_authenticated(request)
-        if user is False:
-            return make_response(jsonify({"message": "User is not authenticated"})), 401
-
         manga_id = request.args.get('mangaId')
 
         if manga_id:
@@ -259,11 +256,15 @@ class MangaView(MethodView):
                 db.session.commit()
                 manga = new_manga
                 result = manga_shema.dump(new_manga)
-
-            track_listed_manga = UserManga.query.filter_by(user_id=user.id, manga_id=manga.id,
+            
+            if user:
+                track_listed_manga = UserManga.query.filter_by(user_id=user.id, manga_id=manga.id,
                                                            in_track_list=True).first()
-            if track_listed_manga:
-                result.data['inTrackList'] = True
+
+                if track_listed_manga:
+                    result.data['inTrackList'] = True
+                else:
+                    result.data['inTrackList'] = False
             else:
                 result.data['inTrackList'] = False
 
