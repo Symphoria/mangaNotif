@@ -66,7 +66,7 @@ def register():
                 new_user = User(username=data['username'], password=password_hash, send_mail_time=send_mail_time,
                                 email=email, activation_token=activation_token)
                 email_template = confirm_account_template(activation_token)
-                #send_mail(email, email_template)
+                #send_mail(email, email_template, "Confirm Account")
             else:
                 return make_response(jsonify({"message": "Username already exists"})), 400
 
@@ -171,7 +171,7 @@ def forget_password():
 
         if user:
             email_template = forget_password_template(user.activation_token)
-            send_mail(data['email'], email_template)
+            send_mail(data['email'], email_template, "Forgot Password?")
 
             return make_response(jsonify({"message": "An email has been sent to help you change your password. Please check your inbox"})), 200
         else:

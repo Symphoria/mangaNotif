@@ -8,7 +8,7 @@ import datetime
 from email_templates import send_notif_template
 
 
-def send_mail(receiver, email_template):
+def send_mail(receiver, email_template, subject):
     sg = sendgrid.SendGridAPIClient(apikey=os.environ.get('SENDGRID_API_KEY'))
 
     data = {
@@ -19,11 +19,12 @@ def send_mail(receiver, email_template):
                         "email": receiver
                     }
                 ],
-                "subject": "Confirm Account"
+                "subject": subject
             }
         ],
         "from": {
-            "email": "hj.harshit007@gmail.com"
+            "email": "hj.harshit007@gmail.com",
+            "name": "Hoodwink"
         },
         "content": [
             {
@@ -51,7 +52,7 @@ def send_notif_mail():
                 manga['title'] = manga['title'][:13] + "..."
 
         template = send_notif_template(result.data)
-        send_mail(user.email, template)
+        send_mail(user.email, template, "Today's Updates")
 
         for user_manga in user_manga_obj_list:
             user_manga.send_mail = False
