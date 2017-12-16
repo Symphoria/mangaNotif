@@ -162,6 +162,8 @@ def forget_password():
             new_password_hash = bcrypt.generate_password_hash(data['newPassword'])
             user.password = new_password_hash
             db.session.commit()
+
+            return make_response(jsonify({"message": "Your password has been changed"})), 200
         else:
             return make_response(jsonify({"message": "There was some error"})), 400
     elif data.get('email'):
@@ -170,6 +172,10 @@ def forget_password():
         if user:
             email_template = forget_password_template(user.activation_token)
             send_mail(data['email'], email_template)
+
+            return make_response(jsonify({"message": "An email has been sent to help you change your password. Please check your inbox"})), 200
+        else:
+            return make_response(jsonify({"message": "There is no user registered with the entered email address"})), 400
     else:
         return make_response(jsonify({"message": "There was something wrong"})), 400
 
