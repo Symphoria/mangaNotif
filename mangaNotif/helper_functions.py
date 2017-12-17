@@ -37,27 +37,25 @@ def send_mail(receiver, email_template, subject):
 
 
 def send_notif_mail():
-    users = User.query.filter(extract('hour', User.send_mail_time) == datetime.datetime.now().hour,
-                              User.is_active == True).all()
+    # users = User.query.filter(extract('hour', User.send_mail_time) == datetime.datetime.now().hour,
+    #                           User.is_active == True).all()
+    users = User.query.filter(User.is_active == True).all()
 
     for user in users:
         user_manga_obj_list = UserManga.query.filter_by(user_id=user.id, send_mail=True)
-        manga_id_list = [obj.manga_id for obj in user_manga_obj_list]
-        track_listed_manga = Manga.query.filter(Manga.id.in_(manga_id_list))
-        manga_schema = MangaSchema(many=True)
-        result = manga_schema.dump(track_listed_manga)
 
-        for manga in result.data:
-            if len(manga['title']) > 14:
-                manga['title'] = manga['title'][:13] + "..."
+        if user_manga_obj_list.count() > 0:
+            manga_id_list = [obj.manga_id for obj in user_manga_obj_list]
+            track_listed_manga = Manga.query.filter(Manga.id.in_(manga_id_list))
+            manga_schema = MangaSchema(many=True)
+            result = manga_schema.dump(track_listed_manga)
+            template = send_notif_template(result.data)
+            send_mail(user.email, template, "Today's Updates")
 
-        template = send_notif_template(result.data)
-        send_mail(user.email, template, "Today's Updates")
+            for user_manga in user_manga_obj_list:
+                user_manga.send_mail = False
 
-        for user_manga in user_manga_obj_list:
-            user_manga.send_mail = False
-
-        db.session.commit()
+            db.session.commit()
 
 
 def scrape_manga_data():

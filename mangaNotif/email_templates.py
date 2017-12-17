@@ -2483,15 +2483,15 @@ def send_notif_template(manga_info):
         
             
 
-            <img alt="" src="''' + manga.cover_art_url + '''" width="164" style="max-width:200px;" class="mcnImage">
+            <img alt="" src="''' + manga['cover_art_url'] + '''" width="164" style="max-width:200px;" class="mcnImage">
             
         
         </td>
     </tr>
     <tr>
         <td class="mcnTextContent" valign="top" style="padding:0 9px 0 9px;" width="164">
-            <div style="text-align: center;"><span style="font-size:22px"><span style="color:#0099cc">''' + manga.title + ''''</span></span><br>
-<span style="font-size:15px">Latest Chapter:<strong>&nbsp;<span style="color:#FF8C00">''' + manga.latest_chapter + '''</span></strong></span></div>
+            <div style="text-align: center;"><span style="font-size:22px"><span style="color:#0099cc">''' + manga['title'] + '''</span></span><br>
+<span style="font-size:15px">Latest Chapter:<strong>&nbsp;<span style="color:#FF8C00">''' + str(manga['latest_chapter']) + '''</span></strong></span></div>
 
         </td>
     </tr>
@@ -2512,7 +2512,7 @@ def send_notif_template(manga_info):
                     <tbody>
                         <tr>
                             <td align="center" valign="middle" class="mcnButtonContent" style="font-family: Arial; font-size: 16px; padding: 15px;">
-                                <a class="mcnButton " title="Read" href="''' + manga.manga_url + '''" target="_blank" style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Read</a>
+                                <a class="mcnButton " title="Read" href="''' + manga['manga_url'] + '''" target="_blank" style="font-weight: bold;letter-spacing: normal;line-height: 100%;text-align: center;text-decoration: none;color: #FFFFFF;">Read</a>
                             </td>
                         </tr>
                     </tbody>
