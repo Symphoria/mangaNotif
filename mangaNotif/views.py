@@ -246,6 +246,8 @@ class MangaView(MethodView):
                 payload = json.loads(manga_info.content)
                 payload['latestChapter'] = payload['chapters'][-1]['chapterId']
                 del payload['chapters']
+                cover_url = payload.get('cover', "http://www.makeupgeek.com/content/wp-content/themes/makeup-geek/images/placeholder-square.svg")
+                cover_url = cover_url[:4] + "s" + cover_url[4:]
                 new_manga = Manga(manga_id=manga_id,
                                   title=payload['name'],
                                   manga_url="http://www.mangareader.net/" + payload['href'],
@@ -255,7 +257,7 @@ class MangaView(MethodView):
                                   year_of_release=payload.get('yearOfRelease', 0),
                                   genres=json.dumps(payload['genres']),
                                   info=payload.get('info', 'Sorry, currently info about this manga is not available'),
-                                  cover_art_url=payload['cover'],
+                                  cover_art_url=cover_url,
                                   latest_chapter=payload['latestChapter'],
                                   last_updated=datetime.strptime(payload['lastUpdate'][:-2], '%Y-%m-%dT%H:%M:%S.%f'))
                 db.session.add(new_manga)
