@@ -22,8 +22,10 @@ from views import *
 from models import *
 from urls import *
 
-db.create_all()
+# db.create_all()
 
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Manga, db.session))
 admin.add_view(ModelView(UserManga, db.session))
+
+scheduler.start()

@@ -5,7 +5,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Define the database - we are working with
 # SQLite for this example
-SQLALCHEMY_DATABASE_URI = "postgresql://postgres:root@localhost:5432/manga_notif"
+SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 DATABASE_CONNECT_OPTIONS = {}
 
@@ -34,6 +34,6 @@ JOBS = [
         'id': 'scrape_manga_data',
         'func': 'mangaNotif.helper_functions:scrape_manga_data',
         'trigger': 'interval',
-        'seconds': 20
+        'seconds': 1000
     }
 ]
