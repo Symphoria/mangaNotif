@@ -36,7 +36,6 @@ JOBS = [
         'trigger': 'cron',
         'day_of_week': 'mon-sun',
         'hour': 23,
-        'minute': '55',
-        'timezone': 'Asia/Kolkata'
+        'minute': '55'
     }
 ]

@@ -1,5 +1,5 @@
 def confirm_account_template(activation_token):
-    activation_url = "http://localhost:8080/#/confirm/" + activation_token
+    activation_url = "https://hoodwink-app.firebaseapp.com/#/confirm/" + activation_token
 
     template = '''<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
@@ -1015,7 +1015,7 @@ So, fasten your seatbelts and let's start!</span></p>
 
 
 def forget_password_template(activation_token):
-    change_password_url = "http://localhost:8080/#/forgot-password/" + activation_token
+    change_password_url = "https://hoodwink-app.firebaseapp.com/#/forgot-password/" + activation_token
 
     html_string = '''<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
