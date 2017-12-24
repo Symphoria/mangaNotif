@@ -33,7 +33,10 @@ JOBS = [
     {
         'id': 'scrape_manga_data',
         'func': 'mangaNotif.helper_functions:scrape_manga_data',
-        'trigger': 'interval',
-        'seconds': 1000
+        'trigger': 'cron',
+        'day_of_week': 'mon-sun',
+        'hour': 23,
+        'minute': '55',
+        'timezone': 'Asia/Kolkata'
     }
 ]
