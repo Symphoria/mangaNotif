@@ -32,6 +32,11 @@ def is_authenticated(req):
         return False
 
 
+@app.route('/')
+def hello():
+    return 'Hoodwink says Hello!'
+
+
 @app.route('/check-token', methods=['PUT'])
 def check_token():
     data = request.get_json()
