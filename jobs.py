@@ -4,7 +4,7 @@ from mangaNotif.helper_functions import *
 sched = BlockingScheduler()
 
 
-@sched.scheduled_job('cron', day_of_week='mon-sun', hour=14, minute=15)
+@sched.scheduled_job('cron', day_of_week='mon-sun', hour=23, minute=55)
 def scheduled_job():
     scrape_manga_data()
 
