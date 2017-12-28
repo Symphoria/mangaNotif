@@ -25,7 +25,7 @@ CSRF_SESSION_KEY = os.environ['CSRF_SESSION_KEY']
 # Secret key for signing cookies
 SECRET_KEY = os.environ['SECRET_KEY']
 
-DEBUG = False
+DEBUG = True
 
 MANGA_PER_PAGE = 9
 
@@ -36,6 +36,6 @@ JOBS = [
         'trigger': 'cron',
         'day_of_week': 'mon-sun',
         'hour': 10,
-        'minute': 40
+        'minute': 50
     }
 ]
