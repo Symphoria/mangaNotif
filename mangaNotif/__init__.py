@@ -10,7 +10,7 @@ from flask_admin.contrib.sqla import ModelView
 app = Flask(__name__)
 app.config.from_object('config')
 
-CORS(app);
+CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
@@ -28,4 +28,4 @@ admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Manga, db.session))
 admin.add_view(ModelView(UserManga, db.session))
 
-scheduler.start()
+# scheduler.start()
