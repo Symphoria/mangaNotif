@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 import sendgrid
 from sqlalchemy import extract
 from serializers import MangaSchema
@@ -59,9 +60,9 @@ def send_notif_mail():
 
 
 def scrape_manga_data():
-    os.system("python mangaNotif/manga_scraper.py")
+    subprocess.call("python mangaNotif/manga_scraper.py", shell=True)
     with open('mangaNotif/result.json', 'r+') as data_file:
-        first_char = data_file.read(1)
+        # first_char = data_file.read(1)
         print 'File opened'
 
         # if first_char:
