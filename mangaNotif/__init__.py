@@ -14,8 +14,8 @@ CORS(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
-scheduler = APScheduler()
-scheduler.init_app(app)
+# scheduler = APScheduler()
+# scheduler.init_app(app)
 admin = Admin(app, template_mode='bootstrap3')
 
 from views import *
