@@ -62,6 +62,7 @@ def scrape_manga_data():
     os.system("python mangaNotif/manga_scraper.py")
     with open('mangaNotif/result.json', 'r+') as data_file:
         first_char = data_file.read(1)
+        print 'File opened'
 
         if first_char:
             data_file.seek(0)
@@ -77,8 +78,11 @@ def scrape_manga_data():
                     user_manga_list = UserManga.query.filter_by(manga_id=manga.id, in_track_list=True)
                     for user_manga_obj in user_manga_list:
                         user_manga_obj.send_mail = True
+            
+            print 'send mail set to true'
 
             db.session.commit()
             data_file.seek(0)
             data_file.truncate()
+            print 'File truncated'
             send_notif_mail()
