@@ -36,6 +36,6 @@ JOBS = [
         'trigger': 'cron',
         'day_of_week': 'mon-sun',
         'hour': 8,
-        'minute': 40
+        'minute': 55
     }
 ]

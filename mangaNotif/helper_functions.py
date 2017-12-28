@@ -81,4 +81,4 @@ def scrape_manga_data():
             db.session.commit()
             data_file.seek(0)
             data_file.truncate()
-            send_notif_mail()
+            # send_notif_mail()
