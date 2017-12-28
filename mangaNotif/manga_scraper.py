@@ -16,8 +16,8 @@ class MangaSpider(scrapy.Spider):
                 yield {
                     'name': manga.css('a.chapter strong::text').extract_first(),
                     'link_manga': base_url + manga.css('a.chapter::attr(href)').extract_first(),
-                    'chapter_name': manga.css('a.chaptersrec::text').extract_first(),
-                    'chapter_link': base_url + manga.css('a.chaptersrec::attr(href)').extract_first()
+                    'chapter_name': manga.css('a.chaptersrec::text').extract_first()
+                    # 'chapter_link': base_url + manga.css('a.chaptersrec::attr(href)').extract_first()
                 }
 
 

@@ -25,7 +25,7 @@ CSRF_SESSION_KEY = os.environ['CSRF_SESSION_KEY']
 # Secret key for signing cookies
 SECRET_KEY = os.environ['SECRET_KEY']
 
-DEBUG = True
+DEBUG = False
 
 MANGA_PER_PAGE = 9
 
@@ -35,7 +35,8 @@ JOBS = [
         'func': 'mangaNotif.helper_functions:scrape_manga_data',
         'trigger': 'cron',
         'day_of_week': 'mon-sun',
-        'hour': 10,
-        'minute': 2
+        'hour': 15,
+        'minute': 57,
+        'timezone': 'Asia/Kolkata'
     }
 ]
