@@ -64,25 +64,25 @@ def scrape_manga_data():
         first_char = data_file.read(1)
         print 'File opened'
 
-        if first_char:
-            data_file.seek(0)
-            manga_data_list = json.load(data_file)
+        # if first_char:
+        data_file.seek(0)
+        manga_data_list = json.load(data_file)
 
-            for manga_data in manga_data_list:
-                manga = Manga.query.filter_by(title=manga_data['name']).first()
+        for manga_data in manga_data_list:
+            manga = Manga.query.filter_by(title=manga_data['name']).first()
 
-                if manga:
-                    manga.latest_chapter = manga_data['chapter_name'].split()[-1]
-                    manga.last_updated = datetime.datetime.now()
+            if manga:
+                manga.latest_chapter = manga_data['chapter_name'].split()[-1]
+                manga.last_updated = datetime.datetime.now()
 
-                    user_manga_list = UserManga.query.filter_by(manga_id=manga.id, in_track_list=True)
-                    for user_manga_obj in user_manga_list:
-                        user_manga_obj.send_mail = True
+                user_manga_list = UserManga.query.filter_by(manga_id=manga.id, in_track_list=True)
+                for user_manga_obj in user_manga_list:
+                    user_manga_obj.send_mail = True
             
-            print 'send mail set to true'
+                print 'send mail set to true'
 
-            db.session.commit()
-            data_file.seek(0)
-            data_file.truncate()
-            print 'File truncated'
-            send_notif_mail()
+        db.session.commit()
+        data_file.seek(0)
+        data_file.truncate()
+        print 'File truncated'
+        send_notif_mail()
