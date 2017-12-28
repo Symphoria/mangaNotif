@@ -35,7 +35,7 @@ JOBS = [
         'func': 'mangaNotif.helper_functions:scrape_manga_data',
         'trigger': 'cron',
         'day_of_week': 'mon-sun',
-        'hour': 9,
-        'minute': 42
+        'hour': 23,
+        'minute': 56
     }
 ]
