@@ -353,7 +353,7 @@ class TrackListView(MethodView):
 
             return make_response(jsonify(payload)), 200
         else:
-            return make_response(jsonify({"message": "There are no manga in your track list"})), 200
+            return make_response(jsonify({"message": "There are no manga in your track list"})), 404
 
     def delete(self):
         user = is_authenticated(request)
