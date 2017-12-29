@@ -202,6 +202,15 @@ class UserView(MethodView):
             return make_response(jsonify({"message": "User is not authenticated"})), 401
 
         data = request.get_json()
+        check_user_username = User.query.filter(User.username == data['username'], User.id != user.id).first()
+        check_user_email = User.query.filter(User.email == data['email'], User.id != user.id).first()
+
+        if check_user_username:
+            return make_response(jsonify({"message": "Username already exists"})), 400
+
+        if check_user_email:
+            return make_response(jsonify({"message": "Email is already taken"})), 400
+
         user.username = data['username']
         user.email = data['email']
         # user.send_mail_time = datetime.strptime(data['sendMailTime'], '%I:%M%p')
@@ -223,6 +232,7 @@ class UserView(MethodView):
         if user is False:
             return make_response(jsonify({"message": "User is not authenticated"})), 401
 
+        UserManga.query.filter_by(user_id=user.id).delete()
         db.session.delete(user)
         db.session.commit()
         response = jsonify({"message": "User deleted"})
