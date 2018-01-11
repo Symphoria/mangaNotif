@@ -52,6 +52,7 @@ def send_notif_mail():
             result = manga_schema.dump(track_listed_manga)
             template = send_notif_template(result.data)
             send_mail(user.email, template, "Today's Updates")
+            print 'mail sent ' + user.email
 
             for user_manga in user_manga_obj_list:
                 user_manga.send_mail = False
