@@ -80,8 +80,7 @@ def scrape_manga_data():
                 user_manga_list = UserManga.query.filter_by(manga_id=manga.id, in_track_list=True)
                 for user_manga_obj in user_manga_list:
                     user_manga_obj.send_mail = True
-            
-                print 'send mail set to true'
+                    print 'send mail set to true'
 
         db.session.commit()
         data_file.seek(0)
